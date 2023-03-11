@@ -3,6 +3,9 @@ const User = require('../models/user');
 const UserRouter = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const requireAuth = require("../middlewares/requireAuth")
+const cookieParser = require('cookie-parser')
+
 
 // Pour le signup 
 UserRouter.post('/user/signup', async (req, res) => {
@@ -30,6 +33,7 @@ UserRouter.post('/user/signup', async (req, res) => {
     }
 });
 
+
 // Pour le login
 UserRouter.post('/user/login', async (req,res) =>{
     // On recupere l'email et le password du req
@@ -50,14 +54,42 @@ UserRouter.post('/user/login', async (req,res) =>{
     // on cree la date d'expiration pour le token
     const exp =Date.now()+ 1000*60*60*24*30;
     // create a jwt token 
-    const token = jwt.sign({ sub: user._id, exp  }, process.env.SECRET);//secret: corresponds aux .env
-
+    const token = jwt.sign({ sub: user._id, exp }, process.env.SECRET);//secret: corresponds aux .env
+    // set the cookie
+    res.cookie("Authorization", token,{
+        expires: new Date(exp),
+        httpOnly: true, 
+        sameSite: 'lax',
+    })
     // send it
-    res.status(200).send({
+    res.sendStatus(200);
+    /* res.status(200).send({
         success: true,
         message: "Le token a bien étais enregistrer",
         token
+    }); */
+});
+
+
+// Pour le logout
+UserRouter.get('/user/logout', async (req, res) =>{
+    res.clearCookie("Authorization")
+    res.status(200).send({
+        success: true,
+        message: "Le user a bien est deconecter",
+        
     });
 });
+
+// check Authentication
+UserRouter.get('/user/check-auth', requireAuth,  async (req, res) => {
+    console.log(req.user);
+    res.status(200).send({
+        success: true,
+        message: "La route a bien etait authentic",
+        
+    });
+}); 
+
 
 module.exports = UserRouter;

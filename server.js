@@ -7,13 +7,16 @@ const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 const db = mongoose.connection
 require('dotenv').config();
+const cookieParser = require('cookie-parser')
 
 //ROUTES
 
 const NoteRouter= require("./routes/NoteRoute")
 const UserRouter=require("./routes/UserRoute")
+const requireAuth = require("./middlewares/requireAuth")
 
 app.use(express.urlencoded({ extended: true}))
+app.use(cookieParser())
 
 db.once("open", () => {
   console.log('[📚Database] MongoDB connected')

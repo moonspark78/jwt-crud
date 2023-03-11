@@ -31,7 +31,7 @@ NoteRouter.post('/add/notes', async (req, res) => {
 
 // READ Note
 NoteRouter.get('/read/notes', async (req, res) => {
-    let notes = await Note.find({})
+    let notes = await Note.find({}) // dans le find pour relier les 2 : user: req.user._id
     return res.status(200).send({
         success: true,
         notes
@@ -41,7 +41,7 @@ NoteRouter.get('/read/notes', async (req, res) => {
 NoteRouter.get('/read/note/:id', async (req, res) => {
     try {
         const {id} = req.params
-        let note = await Note.findById(id)
+        let note = await Note.findById(id) // dans le find pour relier les 2 c : findOne (_id: noteId, user: req.user._id)
         if(!note){
             return res.status(404).send({
                 success: false,

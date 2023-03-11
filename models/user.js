@@ -12,7 +12,9 @@ const UserSchema = new Schema({
     password:{
         type: String,
         required: true,
-    } 
+    },
+    // Nous avons rajouter cette parties apres avoir fini avec jwt
+    notes:[ { type: mongoose.Schema.Types.ObjectId, ref: "Note" } ]
 });
 
 const User = mongoose.model('User',UserSchema);
